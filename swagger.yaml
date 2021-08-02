@@ -15,27 +15,22 @@ servers:
 
 tags:
 - name: "Recipe"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
+  description: "Search for recipe information"
 - name: "Ingredient"
-  description: "Access to Petstore orders"
-- name: "Pantry"
-  description: "Access to Petstore orders"
-- name: "Favorite"
-  description: "Access to Petstore orders"
+  description: "Search for ingredient information"
 - name: "User"
   description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
+- name: "Pantry"
+  description: "Maintain user pantry"
+- name: "Favorite"
+  description: "Maintain user favorite recipe"
+
 
 paths:
   /recipe:
     get:
       tags:
-      - "recipe"
+      - "Recipe"
       summary: "Get all recipes"
       description: "This can be done by both the unlogged in and logged in user."
     
@@ -43,29 +38,27 @@ paths:
         "200":
           description: "successful operation"
           content:
-            application/json:
+            text/html:
               schema:
                 type: object
                 properties:
                   result:
-                    type: object
-                    
+                    allOf:
+                    - $ref:  "#/components/schemas/basic_success"
+                    - type: object
                     properties:
-                      success:
-                        type: boolean
                       recipes:
                         type: array
                         items:
                           allOf:
                             - $ref: "#/components/schemas/basic_ingredient"
                           type: object
-
-  /recipe2:
+  
+  /recipe/{recipe_id}:
     get:
       tags:
-      - "recipe" 
+      - "Recipe" 
       summary: "Get one recipe detail"
-      description: "lala"
       
       parameters:
         - in: path
@@ -78,28 +71,144 @@ paths:
         "200":
           description: "successful operation"
           content:
-            application/json:
+            text/html:
               schema:
                 type: object
                 properties:
                   result:          
                     allOf:
                       - $ref: "#/components/schemas/basic_recipe"
+                      - $ref:  "#/components/schemas/basic_success"
                       - type: object
                       - properties:
-                          success:
-                            type: boolean
-                          instructions:
+                          instruction:
                             type: string
                           ingredients:
                             type: array
                             items:
                               allOf:
                                 - $ref: "#/components/schemas/basic_ingredient"
+  /ingredient:
+    get:
+      tags:
+      - "Ingredient" 
+      summary: "Get all ingredient info"
+      
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            text/html:
+              schema:
+                type: object
+                properties:
+                  result:          
+                    allOf:
+                      - $ref:  "#/components/schemas/basic_success"
+                    type: object
+                    properties:
+                      ingredients:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref:  "#/components/schemas/basic_success"
+                            - $ref: "#/components/schemas/basic_ingredient"
+                          
+                            
+  /ingredient/{ingredient_id}:
+    get:
+      tags:
+        - "Ingredient" 
+      summary: "Get one ingredient detail"
+      
+      parameters:
+        - in: path
+          required: true
+          name: ingredient_id
+          schema:
+            type: integer
+          
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            text/html:
+              schema:
+                type: object
+                properties:
+                  result:          
+                    allOf:
+                      - $ref: "#/components/schemas/basic_success"
+                      - $ref: "#/components/schemas/basic_ingredient"
+                      - type: object
+                      - properties:
+                          recipes:
+                            type: array
+                            items:
+                              allOf:
+                                - $ref: "#/components/schemas/basic_recipe"
+
+  # /register:
+  #   post:
+  #     tags:
+  #       - "User" 
+  #     summary: "Get one ingredient detail"
+
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         text/html:
+  #           schema: 
+             
+  #             type: object
+  #             properties:
+  #               data:
+  #                 type: object
+  #                 properties:
+  #                   username:
+  #                     type: string
+  #                   email:
+  #                     type: string
+  #                   hash_password:
+  #                     type:
+  #                       string
+  #                   nickname:
+  #                     type: string
+  #     responses:
+  #       "200":
+  #         description: "successful operation"
+  #         content:
+  #           text/html:
+            
+              
+
+  # /member/login:
+  #   post:
+  # /member/update:
+  #   put:
 
 
+  # /serach:
+  #   get:
+
+  # /pantry
+  #   get:
+  #   post:
+  #   delete
+
+
+
+  # /favorite:
+  #   get:
+  #   post:
+  #   delete:
 components:
   schemas:
+    basic_success:
+      type: object
+      properties:
+        success:
+          type: boolean
     basic_recipe:
       type: object
       properties:
@@ -128,14 +237,6 @@ components:
         - ingredient_name
         - image_url
       
-    
-    one_recipe:
-      allOf:
-        - $ref: "#/components/schemas/basic_recipe" 
-        - type: object
-          properties:
-            instructions: 
-              type: string
             
 
         
